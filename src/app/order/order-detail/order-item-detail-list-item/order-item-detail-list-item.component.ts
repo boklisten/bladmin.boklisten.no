@@ -8,6 +8,7 @@ import {
 } from "@angular/core";
 import { OrderItem } from "@boklisten/bl-model";
 import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
+import { BranchService, ItemService } from "@boklisten/bl-connect";
 
 @Component({
 	selector: "app-order-item-detail-list-item",
@@ -15,16 +16,39 @@ import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 	styleUrls: ["./order-item-detail-list-item.component.scss"],
 })
 export class OrderItemDetailListItemComponent implements OnInit {
+	@Input() orderBranchId: string;
 	@Input() orderItem: OrderItem;
 	@Input() index: number;
 	@ViewChild("orderItemEditModal") private orderItemEditModal: NgbModalRef;
 	@Output() shouldDelete: EventEmitter<boolean>;
+	public amountLeftToPayBuyout: number;
 
-	constructor(private _modalService: NgbModal) {
+	constructor(
+		private _modalService: NgbModal,
+		private branchService: BranchService,
+		private itemService: ItemService
+	) {
 		this.shouldDelete = new EventEmitter();
 	}
 
-	ngOnInit() {}
+	async ngOnInit() {
+		try {
+			const branch = await this.branchService.getById(this.orderBranchId);
+			const buyoutPercentage = branch.paymentInfo.buyout.percentage;
+			const item = await this.itemService.getById(this.orderItem.item);
+			if (this.orderItem.type !== "partly-payment") {
+				return;
+			}
+			this.amountLeftToPayBuyout =
+				// @ts-ignore bad types
+				this.orderItem.info.amountLeftToPay ??
+				Math.ceil(item.price * buyoutPercentage);
+		} catch (error) {
+			console.log(
+				"failed to get branch info for buyout price calculation"
+			);
+		}
+	}
 
 	public onClick() {
 		this._modalService.open(this.orderItemEditModal);

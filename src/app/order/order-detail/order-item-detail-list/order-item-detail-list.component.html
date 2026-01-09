@@ -6,6 +6,7 @@
 		*ngFor="let orderItem of orderItems; let i = index"
 	>
 		<app-order-item-detail-list-item
+			[orderBranchId]="orderBranchId"
 			[orderItem]="orderItem"
 			(shouldDelete)="onShouldDelete(i)"
 		></app-order-item-detail-list-item>

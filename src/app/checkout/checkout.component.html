@@ -20,6 +20,7 @@
 		(valid)="onCustomerDetailValid($event)"
 	></app-customer-detail-small>
 	<app-order-item-detail-list
+		[orderBranchId]="order.branch"
 		[orderItems]="order.orderItems"
 	></app-order-item-detail-list>
 	<app-order-payment-information

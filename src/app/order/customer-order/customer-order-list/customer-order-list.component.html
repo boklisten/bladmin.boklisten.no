@@ -48,6 +48,7 @@
 					</div>
 
 					<app-order-item-detail-list
+						[orderBranchId]="customerOrder.branch"
 						[orderItems]="customerOrder.orderItems"
 						class="mt-2"
 					></app-order-item-detail-list>

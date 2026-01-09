@@ -14,6 +14,7 @@
 				></app-bl-common-alert>
 			</div>
 			<app-order-item-detail-list
+				[orderBranchId]="order.branch"
 				[orderItems]="order.orderItems"
 				(shouldDelete)="onDeleteOrderItem($event)"
 			></app-order-item-detail-list>
