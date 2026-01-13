@@ -44,7 +44,7 @@
 					<fa-icon [icon]="'calendar'" class="mr-1"></fa-icon>
 				</span>
 
-				{{ customerItem.amountLeftToPay | blcPrice }}
+				{{ amountLeftToPayBuyout | blcPrice }}
 			</span>
 
 			<span *ngIf="customerItem.type === 'rent'"

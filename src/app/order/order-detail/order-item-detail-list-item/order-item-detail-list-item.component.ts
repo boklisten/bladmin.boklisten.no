@@ -34,7 +34,10 @@ export class OrderItemDetailListItemComponent implements OnInit {
 	async ngOnInit() {
 		try {
 			const branch = await this.branchService.getById(this.orderBranchId);
-			const buyoutPercentage = branch.paymentInfo.buyout.percentage;
+			const buyoutPercentage =
+				branch?.paymentInfo?.partlyPaymentPeriods?.find(
+					(period) => period.type === this.orderItem.info?.periodType
+				)?.percentageBuyout ?? branch?.paymentInfo?.buyout?.percentage;
 			const item = await this.itemService.getById(this.orderItem.item);
 			if (this.orderItem.type !== "partly-payment") {
 				return;

@@ -3,6 +3,11 @@ import { CustomerItem, Item } from "@boklisten/bl-model";
 import { DateService } from "../../../date/date.service";
 import { AuthService } from "../../../auth/auth.service";
 import { CustomerItemListService } from "../customer-item-list.service";
+import {
+	BranchService,
+	ItemService,
+	OrderService,
+} from "@boklisten/bl-connect";
 
 @Component({
 	selector: "app-customer-item-list-item",
@@ -14,14 +19,18 @@ export class CustomerItemListItemComponent implements OnInit {
 	public item: Item;
 	public deadlineExpired: boolean;
 	public showAddButton: boolean;
+	public amountLeftToPayBuyout: number;
 
 	constructor(
 		private _dateService: DateService,
 		private _authService: AuthService,
-		private _customerItemListService: CustomerItemListService
+		private _customerItemListService: CustomerItemListService,
+		private branchService: BranchService,
+		private itemService: ItemService,
+		private orderService: OrderService
 	) {}
 
-	ngOnInit() {
+	async ngOnInit() {
 		this.deadlineExpired = this._dateService.isDeadlineExpired(
 			this.customerItem.deadline
 		);
@@ -32,6 +41,35 @@ export class CustomerItemListItemComponent implements OnInit {
 			this.customerItem.id
 		);
 		this.item = customerItemWithItem.item;
+
+		try {
+			if (this.customerItem.type !== "partly-payment") {
+				return;
+			}
+			const branch = await this.branchService.getById(
+				this.customerItem.handoutInfo.handoutById
+			);
+			const order = await this.orderService.getById(
+				this.customerItem.orders?.[
+					(this.customerItem.orders?.length ?? 1) - 1
+				]
+			);
+			const orderItem = order?.orderItems.find(
+				(oi) => oi.customerItem === this.customerItem.id
+			);
+			const buyoutPercentage =
+				branch?.paymentInfo?.partlyPaymentPeriods?.find(
+					(period) => period.type === orderItem.info?.periodType
+				)?.percentageBuyout ?? branch?.paymentInfo?.buyout?.percentage;
+			const item = await this.itemService.getById(orderItem.item);
+			this.amountLeftToPayBuyout =
+				this.customerItem.amountLeftToPay ||
+				Math.floor((item.price * buyoutPercentage) / 10) * 10;
+		} catch (error) {
+			console.log(
+				"failed to get branch info for buyout price calculation"
+			);
+		}
 	}
 
 	private shouldShowAddButton() {
