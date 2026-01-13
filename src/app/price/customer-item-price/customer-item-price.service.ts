@@ -23,12 +23,31 @@ export class CustomerItemPriceService {
 		private _branchService: BranchService
 	) {}
 
-	public getPartlyPaymentBuyoutPriceInformation(
+	public async getPartlyPaymentBuyoutPriceInformation(
 		customerItem: CustomerItem,
 		item: Item
-	): PriceInformation {
-		const amount = customerItem.amountLeftToPay;
+	): Promise<PriceInformation> {
+		const customerItemBranch = customerItem.handoutInfo.handoutById;
+		const currentBranch = this._branchStoreService.getCurrentBranch();
+		const branch =
+			customerItemBranch === currentBranch.id
+				? currentBranch
+				: await this._branchService.getById(customerItemBranch);
 
+		const order = await this._orderService.getById(
+			customerItem.orders?.[(customerItem.orders?.length ?? 1) - 1]
+		);
+		const orderItem = order?.orderItems.find(
+			(oi) => oi.customerItem === customerItem.id
+		);
+		const buyoutPercentage =
+			branch?.paymentInfo?.partlyPaymentPeriods?.find(
+				(period) => period.type === orderItem?.info?.periodType
+			)?.percentageBuyout ?? branch?.paymentInfo?.buyout?.percentage;
+
+		const amount =
+			customerItem.amountLeftToPay ||
+			Math.floor((item.price * buyoutPercentage) / 10) * 10;
 		return this._priceService.calculatePriceInformation(
 			amount,
 			item.taxRate

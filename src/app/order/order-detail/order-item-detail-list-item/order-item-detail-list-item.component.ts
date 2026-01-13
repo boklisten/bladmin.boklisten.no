@@ -41,8 +41,8 @@ export class OrderItemDetailListItemComponent implements OnInit {
 			}
 			this.amountLeftToPayBuyout =
 				// @ts-ignore bad types
-				this.orderItem.info.amountLeftToPay ??
-				Math.ceil(item.price * buyoutPercentage);
+				this.orderItem.info.amountLeftToPay ||
+				Math.floor((item.price * buyoutPercentage) / 10) * 10;
 		} catch (error) {
 			console.log(
 				"failed to get branch info for buyout price calculation"
