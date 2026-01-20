@@ -55,7 +55,7 @@ export class CustomerItemListItemComponent implements OnInit {
 				]
 			);
 			const orderItem = order?.orderItems.find(
-				(oi) => oi.customerItem === this.customerItem.id
+				(oi) => oi.item === this.item.id
 			);
 			const buyoutPercentage =
 				branch?.paymentInfo?.partlyPaymentPeriods?.find(
@@ -67,7 +67,8 @@ export class CustomerItemListItemComponent implements OnInit {
 				Math.floor((item.price * buyoutPercentage) / 10) * 10;
 		} catch (error) {
 			console.log(
-				"failed to get branch info for buyout price calculation"
+				"failed to get branch info for buyout price calculation",
+				error
 			);
 		}
 	}
