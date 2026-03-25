@@ -25,7 +25,7 @@ documentation](https://github.com/boklisten/bl-doc/blob/master/bl-admin/summary.
 1. Clone this repo to your own computer `git clone https://github.com/boklisten/bl-admin`
 2. Navigate into the newly created `bl-admin` folder
 3. Install npm modules `npm i`
-4. Ensure that `bl-api` is running on `http://localhost:1337`
+4. Ensure that `bl-api` is running on `http://localhost:3333`
     - No content will be available in `bl-admin` if `bl-api` is not running.
     - You will not be able to login if `bl-api` is not running.
 5. Start application locally with `npm run watch`
