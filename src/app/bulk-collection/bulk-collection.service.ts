@@ -25,7 +25,8 @@ export class BulkCollectionService {
 		private _customerItemService: CustomerItemService,
 		private _branchService: BranchService,
 		private _branchStoreService: BranchStoreService,
-		private _toasterService: ToasterService
+		private _toasterService: ToasterService,
+		private _userDetailService: UserDetailService
 	) {}
 
 	public async collectOrders(separatedCustomerBooks: ScannedBook[][]) {
@@ -113,6 +114,7 @@ export class BulkCollectionService {
 					this.displayWarning("Boken er ikke aktiv.");
 					break;
 				default:
+					console.log(errorMessage);
 					this.displayWarning("Scanning av BL-ID feilet!");
 					throw error;
 			}
@@ -121,11 +123,11 @@ export class BulkCollectionService {
 
 	public async getCustomerItem(
 		blid: string,
-		customerItem: string
+		customerItemId: string
 	): Promise<CustomerItem> {
 		try {
-			const query = customerItem
-				? "/" + customerItem
+			const query = customerItemId
+				? "/" + customerItemId
 				: // Check both the blid and its inverted sibling to detected blids that have been inverted
 				  `?blid=${blid}&blid=${this.invertBlid(
 						blid
@@ -133,7 +135,13 @@ export class BulkCollectionService {
 			const customerItems = await this._customerItemService.get({
 				query: query,
 			});
-			return customerItems[0];
+			const customerItem = customerItems[0];
+			if (!customerItem.customerInfo) {
+				customerItem.customerInfo = await this._userDetailService.getById(
+					customerItem.customer
+				);
+			}
+			return customerItem;
 		} catch (error) {
 			throw new Error("book not active");
 		}
