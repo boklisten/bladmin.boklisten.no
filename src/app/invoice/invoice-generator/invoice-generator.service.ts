@@ -14,6 +14,7 @@ import {
 } from "@boklisten/bl-connect";
 import { CustomerItemHandlerService } from "../../customer-item/customer-item-handler/customer-item-handler.service";
 import { PriceService } from "../../price/price.service";
+import { CustomerItemPriceService } from "../../price/customer-item-price/customer-item-price.service";
 
 @Injectable({
 	providedIn: "root",
@@ -31,6 +32,7 @@ export class InvoiceGeneratorService {
 		private userDetailService: UserDetailService,
 		private itemService: ItemService,
 		private priceService: PriceService,
+		private customerItemPriceService: CustomerItemPriceService,
 		private dateService: DateService
 	) {
 		this.feePercentage = 1.1;
@@ -146,7 +148,7 @@ export class InvoiceGeneratorService {
 				);
 				const currentInvoiceNumber = invoiceNumber;
 				invoiceNumber += 1;
-				return this.convertToInvoice(
+				return await this.convertToInvoice(
 					reference,
 					currentInvoiceNumber,
 					duedate,
@@ -158,14 +160,14 @@ export class InvoiceGeneratorService {
 		);
 	}
 
-	private convertToInvoice(
+	private async convertToInvoice(
 		reference: string,
 		invoiceNumber: number,
 		duedate: Date,
 		customerItemType: CustomerItemType,
 		userDetail: UserDetail,
 		customerItems: CustomerItem[]
-	): Invoice {
+	): Promise<Invoice> {
 		const branch =
 			userDetail.branch !== undefined
 				? userDetail.branch
@@ -178,7 +180,7 @@ export class InvoiceGeneratorService {
 			customerHavePayed: false,
 			branch: branch,
 			type: customerItemType,
-			customerItemPayments: this.createCustomerItemPayments(
+			customerItemPayments: await this.createCustomerItemPayments(
 				customerItems
 			),
 			customerInfo: {
@@ -222,7 +224,9 @@ export class InvoiceGeneratorService {
 		return invoice;
 	}
 
-	private createCustomerItemPayments(customerItems: CustomerItem[]): any[] {
+	private async createCustomerItemPayments(
+		customerItems: CustomerItem[]
+	): Promise<any[]> {
 		const customerItemPayments = [];
 
 		for (const customerItemObj of customerItems) {
@@ -234,10 +238,9 @@ export class InvoiceGeneratorService {
 				title: item.title,
 				item: item.id,
 				numberOfItems: 1,
-				payment: this.createCustomerItemInvoicePayment(
+				payment: await this.createCustomerItemInvoicePayment(
 					customerItemObj,
-					// @ts-ignore
-					customerItemObj.item as Item
+					item
 				),
 			});
 		}
@@ -245,21 +248,27 @@ export class InvoiceGeneratorService {
 		return customerItemPayments;
 	}
 
-	private createCustomerItemInvoicePayment(
+	private async createCustomerItemInvoicePayment(
 		customerItem: CustomerItem,
 		item: Item
-	): {
+	): Promise<{
 		unit: number;
 		gross: number;
 		net: number;
 		vat: number;
 		discount: number;
-	} {
+	}> {
 		if (customerItem.type === "partly-payment") {
+			// `customerItem.amountLeftToPay` is 0 for items moved between orders,
+			// so compute the buyout amount dynamically (same logic as buyout).
+			const amountLeftToPay = await this.customerItemPriceService.calculatePartlyPaymentBuyoutAmount(
+				customerItem,
+				item
+			);
 			return {
-				unit: customerItem.amountLeftToPay,
-				gross: customerItem.amountLeftToPay,
-				net: customerItem.amountLeftToPay,
+				unit: amountLeftToPay,
+				gross: amountLeftToPay,
+				net: amountLeftToPay,
 				vat: 0,
 				discount: 0,
 			};

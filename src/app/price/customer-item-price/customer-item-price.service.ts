@@ -27,6 +27,30 @@ export class CustomerItemPriceService {
 		customerItem: CustomerItem,
 		item: Item
 	): Promise<PriceInformation> {
+		const amount = await this.calculatePartlyPaymentBuyoutAmount(
+			customerItem,
+			item
+		);
+		return this._priceService.calculatePriceInformation(
+			amount,
+			item.taxRate
+		);
+	}
+
+	/**
+	 * Calculates the amount left to pay (buyout amount) for a partly-payment
+	 * customerItem.
+	 *
+	 * `customerItem.amountLeftToPay` can not be trusted: order items that were
+	 * moved between orders (`movedFromOrder`) are created with
+	 * `amountLeftToPay: 0`, which propagates onto the customerItem. When it is
+	 * missing/zero we fall back to computing it from the item price and the
+	 * branch buyout percentage - the same way the buyout flow does.
+	 */
+	public async calculatePartlyPaymentBuyoutAmount(
+		customerItem: CustomerItem,
+		item: Item
+	): Promise<number> {
 		const customerItemBranch = customerItem.handoutInfo.handoutById;
 		const currentBranch = this._branchStoreService.getCurrentBranch();
 		const branch =
@@ -45,12 +69,9 @@ export class CustomerItemPriceService {
 				(period) => period.type === orderItem?.info?.periodType
 			)?.percentageBuyout ?? branch?.paymentInfo?.buyout?.percentage;
 
-		const amount =
+		return (
 			customerItem.amountLeftToPay ||
-			Math.floor((item.price * buyoutPercentage) / 10) * 10;
-		return this._priceService.calculatePriceInformation(
-			amount,
-			item.taxRate
+			Math.floor((item.price * buyoutPercentage) / 10) * 10
 		);
 	}
 

@@ -2,6 +2,7 @@
 	"name": "@boklisten/bl-admin",
 	"version": "1.10.13",
 	"license": "MIT",
+	"packageManager": "yarn@1.22.22",
 	"scripts": {
 		"dev": "export NODE_OPTIONS=--openssl-legacy-provider; ng serve --port 8080 --configuration=${ANGULAR_ENV}",
 		"build": "export NODE_OPTIONS=--openssl-legacy-provider; ng build --configuration=${ANGULAR_ENV}",
