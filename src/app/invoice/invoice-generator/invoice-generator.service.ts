@@ -221,7 +221,48 @@ export class InvoiceGeneratorService {
 
 		invoice.payment.totalIncludingFee = invoice.payment.total.gross;
 
+		this.validateInvoiceAmounts(invoice);
+
 		return invoice;
+	}
+
+	/**
+	 * An amount that is not a number is stored as null, since that is what
+	 * JSON.stringify makes of NaN. Null amounts are exported as 0 to Visma,
+	 * which silently gives wrong invoices, so refuse to create the invoice
+	 * instead.
+	 */
+	private validateInvoiceAmounts(invoice: Invoice) {
+		const amounts = [
+			...invoice.customerItemPayments.map((customerItemPayment) => ({
+				label: customerItemPayment.title,
+				payment: customerItemPayment.payment,
+			})),
+			{ label: "fee", payment: invoice.payment.fee },
+			{ label: "total", payment: invoice.payment.total },
+		];
+
+		const invalidAmounts = amounts
+			.map(({ label, payment }) => ({
+				label,
+				invalidFields: Object.keys(payment).filter(
+					(field) => !Number.isFinite(payment[field])
+				),
+			}))
+			.filter(({ invalidFields }) => invalidFields.length > 0);
+
+		if (invalidAmounts.length > 0) {
+			throw new Error(
+				`invoice ${invoice.invoiceId} for ${
+					invoice.customerInfo.name
+				} has invalid amounts: ${invalidAmounts
+					.map(
+						({ label, invalidFields }) =>
+							`${label} (${invalidFields.join(", ")})`
+					)
+					.join(", ")}`
+			);
+		}
 	}
 
 	private async createCustomerItemPayments(
@@ -277,7 +318,7 @@ export class InvoiceGeneratorService {
 			unit: this.itemUnitPrice(item),
 			gross: this.itemGrossPrice(item),
 			net: this.itemNetPrice(item),
-			vat: this.itemVatPrice(item),
+			vat: this.itemVatPrice(),
 			discount: this.itemDiscountPrice(item),
 		};
 	}
@@ -318,13 +359,19 @@ export class InvoiceGeneratorService {
 	}
 
 	private itemNetPrice(item: Item): number {
-		return this.itemGrossPrice(item) - this.itemVatPrice(item);
+		return this.itemGrossPrice(item) - this.itemVatPrice();
 	}
 
-	private itemVatPrice(item: Item): number {
-		return this.priceService.toFixed(
-			this.itemGrossPrice(item) * item.taxRate
-		);
+	/**
+	 * Books are exempt from VAT in the last sales link, both when sold and
+	 * when rented out (mval. § 6-4), so item lines never carry VAT.
+	 *
+	 * This used to be calculated from `item.taxRate`, but that field was
+	 * removed from the API. Multiplying by `undefined` gave NaN, which was
+	 * stored as null and exported as 0 in the Visma net field.
+	 */
+	private itemVatPrice(): number {
+		return 0;
 	}
 
 	private itemDiscountPrice(item: Item): number {

@@ -72,8 +72,9 @@ export class InvoiceGeneratorComponent implements OnInit {
 				this.invoices = invoices;
 				this.invoiceGeneratorService.setUnsavedInvoices(invoices);
 			})
-			.catch(() => {
+			.catch((err) => {
 				this.wait = false;
+				console.log("could not create invoices", err);
 			});
 	}
 
