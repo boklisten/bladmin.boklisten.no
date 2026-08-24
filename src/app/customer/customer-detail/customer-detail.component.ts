@@ -49,11 +49,6 @@ export class CustomerDetailComponent implements OnInit {
 		this.customerWait$.unsubscribe();
 	}
 
-	public onUserDetailDeleted() {
-		this.customerDetail = null;
-		this.reload();
-	}
-
 	public onUserDetailEmailChange() {
 		this._customerService.reload();
 	}
@@ -70,10 +65,6 @@ export class CustomerDetailComponent implements OnInit {
 		return this._authService.isManager();
 	}
 
-	private reload() {
-		this.setCustomerDetailIfNotSet();
-	}
-
 	private onCustomerChange() {
 		this.customer$ = this._customerService.subscribe(
 			(customerDetail: UserDetail) => {
@@ -86,24 +77,5 @@ export class CustomerDetailComponent implements OnInit {
 		this.customerWait$ = this._customerService.onWait((wait) => {
 			this.wait = wait;
 		});
-	}
-
-	private setCustomerDetailIfNotSet() {
-		try {
-			let customerDetailId = this._customerDetailService.getId();
-
-			if (this._currentId !== customerDetailId) {
-				this.setCustomerDetail();
-			}
-		} catch (e) {
-			this.setCustomerDetail();
-		}
-	}
-
-	private setCustomerDetail() {
-		this.wait = true;
-		this.warningText = null;
-
-		this._customerService.set(this._currentId);
 	}
 }

@@ -21,7 +21,6 @@ import { OrderModule } from "../order/order.module";
 import { CustomerDetailSmallComponent } from "./customer-detail/customer-detail-small/customer-detail-small.component";
 import { CustomerItemModule } from "../customer-item/customer-item.module";
 import { MessengerModule } from "../messenger/messenger.module";
-import { CustomerDeleteComponent } from "./customer-delete/customer-delete.component";
 import { CustomerInformationComponent } from "./customer-information/customer-information.component";
 import { CustomerComponent } from "./customer.component";
 
@@ -51,7 +50,6 @@ import { CustomerComponent } from "./customer.component";
 		CustomerCurrentComponent,
 		CustomerDetailPopoverComponent,
 		CustomerDetailSmallComponent,
-		CustomerDeleteComponent,
 		CustomerInformationComponent,
 		CustomerComponent,
 	],
