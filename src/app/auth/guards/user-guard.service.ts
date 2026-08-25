@@ -13,18 +13,14 @@ export class UserGuardService {
 
 	public redirectToPermissionDenied(url: string) {
 		this._authService.redirectUrl = url;
-		this.applicationLogout();
+		this._authService.applicationLogout();
 		this._router.navigate(["/auth/permission/denied"]);
 	}
 
 	public redirectToLogin(url: string) {
 		this._authService.redirectUrl = url;
-		this.applicationLogout();
-		this._router.navigate(["/auth/login"]);
-	}
-
-	private applicationLogout() {
 		this._authService.applicationLogout();
 		this._tokenService.removeTokens();
+		this._router.navigate(["/auth/login"]);
 	}
 }
