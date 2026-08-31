@@ -75,7 +75,7 @@ const routes: Routes = [
 		],
 	},
 	{
-		path: "admin/hurtigutdeling",
+		path: "admin/kundesok",
 		component: BlNextLinkerComponent,
 	},
 	{

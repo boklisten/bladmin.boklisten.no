@@ -71,8 +71,8 @@ export class SideBarComponent implements OnInit, OnDestroy {
 				selected: false,
 			},
 			{
-				name: "handout",
-				link: "admin/hurtigutdeling",
+				name: "customer-search",
+				link: "admin/kundesok",
 				icon: "clipboard-list",
 				permission: "employee",
 				selected: false,
