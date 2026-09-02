@@ -34,7 +34,8 @@ export class BlNextLinkerService {
 			url.searchParams.append("access_token", accessToken);
 		}
 		url.searchParams.append("caller", "bl-admin");
-		window.location.href = url.toString();
+		// Replace rather than push: a Back from bl-next must not land on this redirect page.
+		window.location.replace(url.toString());
 	}
 
 	public receiveTokens() {

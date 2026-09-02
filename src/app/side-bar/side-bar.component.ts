@@ -50,8 +50,8 @@ export class SideBarComponent implements OnInit, OnDestroy {
 		this.bladminVersionName = environment.versionName;
 		this.sidebarLinks = [
 			{
-				name: "blid",
-				link: "blid",
+				name: "search",
+				link: "admin/kasse",
 				icon: "search",
 				permission: "employee",
 				selected: false,
@@ -67,13 +67,6 @@ export class SideBarComponent implements OnInit, OnDestroy {
 				name: "bulk",
 				link: "bulk",
 				icon: "qrcode",
-				permission: "employee",
-				selected: false,
-			},
-			{
-				name: "customer-search",
-				link: "admin/kundesok",
-				icon: "clipboard-list",
 				permission: "employee",
 				selected: false,
 			},

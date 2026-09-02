@@ -47,7 +47,6 @@ import { ToasterModule } from "./toaster/toaster.module";
 import { OrderManagerModule } from "./order-manager/order-manager.module";
 import * as Sentry from "@sentry/angular";
 import { Router } from "@angular/router";
-import { BulkCollectionModule } from "./bulk-collection/bulk-collection.module";
 import { BlNextLinkerModule } from "./bl-next-linker/bl-next-linker.module";
 import { BlNextLinkerService } from "./bl-next-linker/bl-next-linker.service";
 import { AuthGatewayComponent } from "./auth-gateway/auth-gateway.component";
@@ -84,7 +83,6 @@ import { AuthGatewayComponent } from "./auth-gateway/auth-gateway.component";
 		ScannerModule,
 		ToasterModule,
 		OrderManagerModule,
-		BulkCollectionModule,
 	],
 	providers: [
 		BlNextLinkerService,

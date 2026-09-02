@@ -75,6 +75,27 @@ const routes: Routes = [
 		],
 	},
 	{
+		path: "admin/kasse",
+		component: BlNextLinkerComponent,
+	},
+	// Boksøk, Kundesøk and Hurtiginnsamling all live on bl-next's Kasse page now. The old bl-admin
+	// paths are still linked from inside this app (blid chips) and from bookmarks.
+	{
+		path: "blid",
+		component: BlNextLinkerComponent,
+		data: { nextPath: "/admin/kasse" },
+	},
+	{
+		path: "blid/:blid",
+		component: BlNextLinkerComponent,
+		data: { nextPath: "/admin/kasse?blid=:blid" },
+	},
+	{
+		path: "bulk",
+		component: BlNextLinkerComponent,
+		data: { nextPath: "/admin/kasse?modus=innsamling" },
+	},
+	{
 		path: "admin/kundesok",
 		component: BlNextLinkerComponent,
 	},
