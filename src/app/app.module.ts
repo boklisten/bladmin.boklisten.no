@@ -3,7 +3,6 @@ import { APP_INITIALIZER, ErrorHandler, NgModule } from "@angular/core";
 
 import { AppComponent } from "./app.component";
 import { AppRoutingModule } from "./app-routing.module";
-import { HomeComponent } from "./home/home.component";
 import { environment } from "../environments/environment";
 import { HeaderComponent } from "./header/header.component";
 import { SideBarComponent } from "./side-bar/side-bar.component";
@@ -54,7 +53,6 @@ import { AuthGatewayComponent } from "./auth-gateway/auth-gateway.component";
 @NgModule({
 	declarations: [
 		AppComponent,
-		HomeComponent,
 		HeaderComponent,
 		SideBarComponent,
 		SideBarButtonComponent,

@@ -1,21 +1,21 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
-import { HomeComponent } from "./home/home.component";
-import { EmployeeGuardService } from "./auth/guards/employee-guard.service";
-import { BranchGuardService } from "./branch/branch-guard.service";
 import { BlNextLinkerComponent } from "./bl-next-linker/bl-next-linker.component";
 import { AuthGatewayComponent } from "./auth-gateway/auth-gateway.component";
 
 const routes: Routes = [
+	// The landing page lives on bl-next now. "home" stays because the header logo, the ALT+UP
+	// sidebar shortcut and old bookmarks still point there.
 	{
 		path: "",
-		redirectTo: "/home",
+		component: BlNextLinkerComponent,
 		pathMatch: "full",
+		data: { nextPath: "/admin" },
 	},
 	{
 		path: "home",
-		canActivate: [EmployeeGuardService, BranchGuardService],
-		component: HomeComponent,
+		component: BlNextLinkerComponent,
+		data: { nextPath: "/admin" },
 	},
 	{
 		path: "auth",
@@ -94,6 +94,26 @@ const routes: Routes = [
 		path: "bulk",
 		component: BlNextLinkerComponent,
 		data: { nextPath: "/admin/kasse?modus=innsamling" },
+	},
+	// The customer page and its message log live on bl-next's Kasse page now. Both are still
+	// linked from inside this app (sidebar, order, invoice and customer-item pages) and bookmarks.
+	// The old detail page was mostly an order list, so it lands on the order history tab.
+	{
+		path: "customer",
+		redirectTo: "customer/detail",
+		pathMatch: "full",
+	},
+	{
+		path: "customer/detail",
+		component: BlNextLinkerComponent,
+		data: {
+			nextPath: "/admin/kasse?kunde=:customerId&visning=ordrehistorikk",
+		},
+	},
+	{
+		path: "customer/messages",
+		component: BlNextLinkerComponent,
+		data: { nextPath: "/admin/kasse?kunde=:customerId&visning=meldinger" },
 	},
 	{
 		path: "admin/kundesok",

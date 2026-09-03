@@ -2,7 +2,6 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { OrderRoutingModule } from "./order-routing.module";
-import { CustomerOrderListComponent } from "./customer-order/customer-order-list/customer-order-list.component";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { BlCommonModule } from "../bl-common/bl-common.module";
 import { OrderDetailComponent } from "./order-detail/order-detail.component";
@@ -30,7 +29,6 @@ import { OrderConfirmComponent } from "./order-confirm/order-confirm.component";
 		FormsModule,
 	],
 	declarations: [
-		CustomerOrderListComponent,
 		OrderDetailComponent,
 		OrderPaymentDetailComponent,
 		OrderDetailCardComponent,
@@ -47,7 +45,6 @@ import { OrderConfirmComponent } from "./order-confirm/order-confirm.component";
 		OrderConfirmComponent,
 	],
 	exports: [
-		CustomerOrderListComponent,
 		CustomerOrderItemListComponent,
 		OrderItemListComponent,
 		OrderItemDetailListComponent,
